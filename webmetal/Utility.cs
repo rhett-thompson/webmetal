@@ -40,9 +40,13 @@ namespace webmetal
             object obj = Activator.CreateInstance(type);
             PropertyInfo[] props = type.GetProperties();
 
+
             foreach (PropertyInfo prop in props)
             {
 
+                if (collection[prop.Name] == null)
+                    continue;
+                
                 object value = ChangeType(collection[prop.Name], prop.PropertyType);
                 prop.SetValue(obj, value, null);
 

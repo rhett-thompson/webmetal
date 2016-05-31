@@ -4,6 +4,9 @@ using System.IO;
 using System.Reflection;
 using System.Web;
 using System.Web.Routing;
+using RazorEngine;
+using RazorEngine.Configuration;
+using RazorEngine.Templating;
 
 namespace webmetal
 {
@@ -15,6 +18,8 @@ namespace webmetal
         public Dictionary<string, Type> pages = new Dictionary<string, Type>();
         public Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
         public Dictionary<string, string> fileDataCache = new Dictionary<string, string>();
+        public Dictionary<string, MimeTypeHandler> mimeTypeHandlers = new Dictionary<string, MimeTypeHandler>();
+        public IRazorEngineService razorService;
 
 #if DEBUG
         public bool debugMode = true;
@@ -24,6 +29,9 @@ namespace webmetal
 
         public void init(Type rootPage, Assembly assembly = null)
         {
+
+            var config = new TemplateServiceConfiguration() { Debug = debugMode, BaseTemplateType = typeof(WebMetalTemplate<>) };
+            razorService = RazorEngineService.Create(config);
 
             if (assembly == null)
                 assembly = Assembly.GetCallingAssembly();
@@ -57,7 +65,9 @@ namespace webmetal
                 addPage(type, baseRoute.ToLower());
 
             }
-            
+
+            mimeTypeHandlers.Add("text/plain", new TextPlainMimeTypeHandler());
+
         }
 
         private void addPage(Type type, string baseRoute)
@@ -102,20 +112,34 @@ namespace webmetal
 
         public virtual string loadFileData(string source)
         {
-
             if (debugMode)
                 return File.ReadAllText(HttpContext.Current.Server.MapPath(source));
-
-            if (fileDataCache.ContainsKey(source))
-                return fileDataCache[source];
             else
             {
-                fileDataCache[source] = File.ReadAllText(HttpContext.Current.Server.MapPath(source));
-                return fileDataCache[source];
+
+                if (fileDataCache.ContainsKey(source))
+                    return fileDataCache[source];
+                else
+                {
+                    fileDataCache[source] = File.ReadAllText(HttpContext.Current.Server.MapPath(source));
+                    return fileDataCache[source];
+                }
+
             }
+        }
+
+        public virtual string view(string source, object model = null)
+        {
+
+            string key = !debugMode ? source : Guid.NewGuid().ToString();
+
+            if (!razorService.IsTemplateCached(key, model.GetType()))
+                return razorService.RunCompile(loadFileData(source), key, null, model);
+            else
+                return razorService.Run(key, null, model);
 
         }
 
     }
-    
+
 }
