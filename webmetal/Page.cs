@@ -154,10 +154,10 @@ namespace webmetal
             return application.loadFileData(source);
         }
 
-        public string view(string source, object model = null)
+        public string view(string source, object model = null, IDictionary<string, object> viewBag = null)
         {
 
-            return application.view(source, model);
+            return application.view(source, model, viewBag);
 
         }
 

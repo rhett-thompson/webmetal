@@ -128,13 +128,13 @@ namespace webmetal
             }
         }
 
-        public virtual string view(string source, object model = null)
+        public virtual string view(string source, object model = null, IDictionary<string, object> viewBag = null)
         {
 
             string key = !debugMode ? source : Guid.NewGuid().ToString();
 
             if (!razorService.IsTemplateCached(key, model.GetType()))
-                return razorService.RunCompile(loadFileData(source), key, null, model);
+                return razorService.RunCompile(loadFileData(source), key, null, model, viewBag != null ? new DynamicViewBag(viewBag): null);
             else
                 return razorService.Run(key, null, model);
 

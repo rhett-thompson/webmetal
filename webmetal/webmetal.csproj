@@ -53,7 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlHelper.cs" />
+    <Compile Include="WebMetalTemplate.cs" />
     <Compile Include="MimeTypeHandlers.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
