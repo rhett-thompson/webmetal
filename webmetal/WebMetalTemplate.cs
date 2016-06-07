@@ -79,7 +79,7 @@ namespace webmetal
 
         public IEncodedString InputFor<ModelT, FieldT>(ModelT model, Expression<Func<ModelT, FieldT>> propertyToBindTo, object attributes = null)
         {
-
+            
             PropertyInfo prop = getProp(model, propertyToBindTo);
 
             return Raw(string.Format("<input value='{0}' name='{1}' {2}>",
@@ -107,11 +107,12 @@ namespace webmetal
 
             PropertyInfo prop = getProp(model, propertyToBindTo);
 
-            return Raw(string.Format("<select value='{0}' name='{1}' {2}>{3}</select>",
-                prop.GetValue(model),
+            object v = prop.GetValue(model);
+            
+            return Raw(string.Format("<select name='{0}' {1}>{2}</select>",
                 prop.Name,
                 getAttributes(attributes),
-                string.Join("\r\n", options.Select(o => string.Format("<option value='{0}'>{1}</option>", o.Value, o.Key)))
+                string.Join("\r\n", options.Select(o => string.Format("<option value='{0}' {2}>{1}</option>", o.Value, o.Key, o.Value.Equals(v) ? "selected" : "")))
                 ));
 
         }
@@ -163,5 +164,5 @@ namespace webmetal
         }
         
     }
-
+    
 }

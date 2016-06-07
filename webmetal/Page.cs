@@ -149,11 +149,6 @@ namespace webmetal
 
         public abstract void render();
 
-        public string loadFileData(string source)
-        {
-            return application.loadFileData(source);
-        }
-
         public string view(string source, object model = null, IDictionary<string, object> viewBag = null)
         {
 
