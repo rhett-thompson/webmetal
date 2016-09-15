@@ -45,16 +45,11 @@ namespace webmetal
             if (assembly == null)
                 assembly = Assembly.GetCallingAssembly();
 
-            //addPage(rootPage, "");
+            addPage(rootPage, "");
 
             foreach (Type type in assembly.GetTypes())
-            {
-
-                if (!type.IsSubclassOf(typeof(Page)) || type.FullName.StartsWith("webmetal") || type.GetCustomAttribute<Ignore>() != null)
-                    continue;
-                
-                addPage(type, getName(type));
-            }
+                if (type.IsSubclassOf(typeof(Page)) && !type.FullName.StartsWith("webmetal") && type.GetCustomAttribute<Ignore>() == null)
+                    addPage(type, getName(type));
 
             mimeTypeHandlers.Add("text/plain", new TextPlainMimeTypeHandler());
 
