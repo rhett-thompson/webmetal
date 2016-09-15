@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
@@ -46,13 +47,25 @@ namespace webmetal
 
                 if (collection[prop.Name] == null)
                     continue;
-                
+
                 object value = ChangeType(collection[prop.Name], prop.PropertyType);
                 prop.SetValue(obj, value, null);
 
             }
 
             return obj;
+
+        }
+
+        public static object MapCollectionToObject(IDictionary<string, object> dictionary, Type type)
+        {
+
+            NameValueCollection collection = new NameValueCollection();
+
+            foreach (var i in dictionary)
+                collection.Add(i.Key, i.Value.ToString());
+
+            return MapCollectionToObject(collection, type);
 
         }
 

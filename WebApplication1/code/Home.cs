@@ -3,9 +3,11 @@ using webmetal;
 
 namespace WebApplication1
 {
+
     public class Home : Page
     {
-        public override void render()
+        
+        public override void index()
         {
             response.Write(view("home"));
         }

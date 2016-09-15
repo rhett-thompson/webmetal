@@ -11,17 +11,13 @@ namespace webmetal
     public class WebMetalApplication : HttpApplication
     {
 
-        public List<string> ignoredMethods = new List<string>() { "render", "init" };
+        public List<string> ignoredMethods = new List<string>() { "index", "init" };
         public List<string> specialPagePrefixList = new List<string>() { "page" };
         public Dictionary<string, Type> pages = new Dictionary<string, Type>();
         public Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
-        public Dictionary<string, string> fileDataCache = new Dictionary<string, string>();
         public Dictionary<string, MimeTypeHandler> mimeTypeHandlers = new Dictionary<string, MimeTypeHandler>();
 
         public IRazorEngineService razorService;
-        //public TemplateServiceConfiguration razorConfig;
-        //public InvalidatingCachingProvider razorDebugCacheProvider;
-
 
 #if DEBUG
         public bool debugMode = true;
@@ -49,38 +45,25 @@ namespace webmetal
             if (assembly == null)
                 assembly = Assembly.GetCallingAssembly();
 
-            addPage(rootPage, "");
+            //addPage(rootPage, "");
 
             foreach (Type type in assembly.GetTypes())
             {
 
-                if (!type.IsSubclassOf(typeof(Page)) || type.FullName.StartsWith("webmetal"))
+                if (!type.IsSubclassOf(typeof(Page)) || type.FullName.StartsWith("webmetal") || type.GetCustomAttribute<Ignore>() != null)
                     continue;
-
-                string baseRoute = type.Name;
-
-                RouteConfig routeConfig = type.GetCustomAttribute<RouteConfig>(false);
-                if (routeConfig != null)
-                {
-
-                    if (routeConfig.ignore)
-                        continue;
-
-                    if (routeConfig.useNamespaceForBaseRoute)
-                        baseRoute = type.FullName.Replace('.', '/').ToLower();
-
-                    if (routeConfig.overrideRoute != null)
-                        baseRoute = routeConfig.overrideRoute;
-
-                }
-
-                //add page
-                addPage(type, baseRoute.ToLower());
-
+                
+                addPage(type, getName(type));
             }
 
             mimeTypeHandlers.Add("text/plain", new TextPlainMimeTypeHandler());
 
+        }
+        
+        private string getName(MemberInfo member)
+        {
+            OverrideName routeConfig = member.GetCustomAttribute<OverrideName>(false);
+            return routeConfig != null ? routeConfig.overrideName.ToLower() : member.Name.ToLower();
         }
 
         private void addPage(Type type, string baseRoute)
@@ -107,11 +90,15 @@ namespace webmetal
             foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
 
-                if (ignoredMethods.Contains(method.Name))
+                string methodName = method.Name.ToLower();
+                if (ignoredMethods.Contains(methodName) || method.GetCustomAttribute<Ignore>() != null)
                     continue;
+                
+                CustomRoute customRoute = method.GetCustomAttribute<CustomRoute>();
+                if (customRoute != null)
+                    methodName = customRoute.route;
 
-                string methodRoute = string.Format("{0}/{1}", baseRoute, method.Name.ToLower()).TrimStart(new char[] { '/' });
-
+                string methodRoute = string.Format("{0}/{1}", baseRoute, methodName).TrimStart(new char[] { '/' });
                 RouteTable.Routes.Add(new Route(methodRoute, routeHandler));
                 methods.Add(methodRoute, method);
 

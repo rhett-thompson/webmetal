@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using System.Web.Routing;
 using webmetal;
 
 namespace WebApplication1
@@ -10,11 +11,6 @@ namespace WebApplication1
         protected void Application_Start(object sender, EventArgs e)
         {
             init(typeof(Home), new string[] { HttpContext.Current.Server.MapPath("~/templates") });
-
-            using (var db = new LiteDB.LiteDatabase(""))
-            {
-
-            }
 
         }
 
