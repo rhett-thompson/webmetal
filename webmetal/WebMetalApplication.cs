@@ -25,7 +25,7 @@ namespace webmetal
         public bool debugMode = false;
 #endif
 
-        public void init(Type rootPage, IEnumerable<string> layoutRoots = null, Assembly assembly = null)
+        public void init(Type rootPage = null, IEnumerable<string> layoutRoots = null, Assembly assembly = null)
         {
 
             if (layoutRoots == null)
@@ -45,7 +45,8 @@ namespace webmetal
             if (assembly == null)
                 assembly = Assembly.GetCallingAssembly();
 
-            addPage(rootPage, "");
+            if(rootPage != null)
+                addPage(rootPage, "");
 
             foreach (Type type in assembly.GetTypes())
                 if (type.IsSubclassOf(typeof(Page)) && !type.FullName.StartsWith("webmetal") && type.GetCustomAttribute<Ignore>() == null)

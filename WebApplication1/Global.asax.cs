@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Web;
-using System.Web.Routing;
+using System.IO;
+using Newtonsoft.Json;
+using WebApplication1.controllers;
+using WebApplication1.models;
 using webmetal;
 
 namespace WebApplication1
@@ -8,40 +10,16 @@ namespace WebApplication1
     public class Global : WebMetalApplication
     {
 
+        public static Settings settings;
+
         protected void Application_Start(object sender, EventArgs e)
         {
-            init(typeof(Home), new string[] { HttpContext.Current.Server.MapPath("~/templates") });
 
+            settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Server.MapPath("~/settings.json")));
+
+            init(typeof(HomePage), new string[] { Server.MapPath(settings.templates_directory) });
+            
         }
-
-        protected void Session_Start(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_AuthenticateRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_Error(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Session_End(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_End(object sender, EventArgs e)
-        {
-
-        }
+        
     }
 }

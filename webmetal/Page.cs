@@ -166,7 +166,7 @@ namespace webmetal
                     }
 
                     method.Invoke(this, methodParams.ToArray());
-
+                    
                 }
 
             }
@@ -180,7 +180,7 @@ namespace webmetal
         public virtual void init() { }
 
         public abstract void index();
-
+        
         public string view(string source, object model = null, IDictionary<string, object> viewBag = null)
         {
 

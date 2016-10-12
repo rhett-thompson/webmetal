@@ -4,21 +4,21 @@ using System.Linq;
 using System.Web;
 using webmetal;
 
-namespace WebApplication1.code
+namespace WebApplication1.controllers
 {
     
-    public class Category : Page
+    public class CategoryPage : Page
     {
 
         [CustomRoute("{a}/asd/{b}")]
-        public void test(int a, int b)
+        public string test(int a, int b)
         {
-
+            return "asd";
         }
 
         public override void index()
         {
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }
