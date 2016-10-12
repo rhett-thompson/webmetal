@@ -165,7 +165,9 @@ namespace webmetal
 
                     }
 
-                    method.Invoke(this, methodParams.ToArray());
+                    object ret = method.Invoke(this, methodParams.ToArray());
+                    if (ret != null)
+                        response.Write(ret);
                     
                 }
 
