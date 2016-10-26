@@ -59,6 +59,11 @@ namespace webmetal
 
     }
 
+    public class SkipInit : Attribute
+    {
+
+    }
+
     public class CustomRoute : Attribute
     {
 
@@ -103,19 +108,23 @@ namespace webmetal
                 response = context.Response;
                 server = context.Server;
                 routeData = request.RequestContext.RouteData;
-
-                init();
-
+                
                 string route = (routeData.Route as Route).Url;
 
                 if (application.pages.ContainsKey(route))
+                {
+                    init();
                     index();
+                }
                 else if (application.methods.ContainsKey(route))
                 {
 
                     MethodInfo method = application.methods[route];
-                    List<object> methodParams = new List<object>();
 
+                    if (method.GetCustomAttribute<SkipInit>() == null)
+                        init();
+
+                    List<object> methodParams = new List<object>();
                     foreach (ParameterInfo param in method.GetParameters())
                     {
 
@@ -168,7 +177,7 @@ namespace webmetal
                     object ret = method.Invoke(this, methodParams.ToArray());
                     if (ret != null)
                         response.Write(ret);
-                    
+
                 }
 
             }
