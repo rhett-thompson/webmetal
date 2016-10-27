@@ -12,7 +12,7 @@ namespace webmetal
     {
 
         public List<string> ignoredMethods = new List<string>() { "index", "init" };
-        public List<string> specialPagePrefixList = new List<string>() { "page" };
+        public List<string> specialPageSuffixList = new List<string>() { "page", "controller" };
         public Dictionary<string, Type> pages = new Dictionary<string, Type>();
         public Dictionary<string, MethodInfo> methods = new Dictionary<string, MethodInfo>();
         public Dictionary<string, MimeTypeHandler> mimeTypeHandlers = new Dictionary<string, MimeTypeHandler>();
@@ -66,9 +66,9 @@ namespace webmetal
         {
 
             //remove special prefixes
-            foreach (string prefix in specialPagePrefixList)
-                if (baseRoute.EndsWith(prefix))
-                    baseRoute = baseRoute.Substring(0, baseRoute.Length - prefix.Length);
+            foreach (string suffix in specialPageSuffixList)
+                if (baseRoute.EndsWith(suffix))
+                    baseRoute = baseRoute.Substring(0, baseRoute.Length - suffix.Length);
 
             //create route handler
             RouteHandler routeHandler = new RouteHandler()
@@ -106,7 +106,7 @@ namespace webmetal
 
         }
 
-        public virtual string view(string source, object model = null, IDictionary<string, object> viewBag = null)
+        public virtual string view(string source, object model, IDictionary<string, object> viewBag = null)
         {
  
             return razorService.RunCompile(source, null, model);

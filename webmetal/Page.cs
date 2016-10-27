@@ -192,7 +192,7 @@ namespace webmetal
 
         public abstract void index();
         
-        public string view(string source, object model = null, IDictionary<string, object> viewBag = null)
+        public string view(string source, object model, IDictionary<string, object> viewBag = null)
         {
 
             return application.view(source, model, viewBag);
