@@ -64,6 +64,7 @@ namespace webmetal
 
         private void addPage(Type type, string baseRoute)
         {
+             
 
             //remove special prefixes
             foreach (string suffix in specialPageSuffixList)
